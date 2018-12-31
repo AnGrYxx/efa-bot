@@ -1,30 +1,35 @@
-# Bot Example
+# Error Fare Alerts Premium Deals Bot
 
-Example source code for Byteball chatbot.  Copy this bot and start adding your stuff.
+This is the source code of the www.ErrorFareAlerts.com Premium Deals bot, running on the Byteball platform.
+
+www.ErrorFareAlerts.com finds travel deals and error fares that are very cheap.
+By subscribing to this bot you can get deals faster than all other subscribers. 
+Also you will get exclusive deals, only subscribers of this bot will get.
+In order to get this premium notifications you need to deposit bytes. 
+Every time this bot sends you a link to a deal, your byte balance will reduce by 1 MB, which is about 0,03 EUR.
+
 
 ## Requirements
 
 node.js 6+
 
+
 ## Install
 ```
 npm install
 ```
+
+
 ## Run
 ```
 node start.js
 ```
 Note the line that it prints on start-up:
 ```
-====== my pairing code: Aj2No4YghYNcHjzPqobfp5gSJ4jyaBqnhF2dK7lEsMZ+@byteball.org/bb#*
+====== my pairing code: A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*
 ```
 Copy this pairing code to your Byteball wallet: Chat tab, Add a new device, Accept invitation, paste the code, ready to chat.
 
-## Next steps
-
-1. See the sources of [start.js](https://github.com/byteball/bot-example/blob/master/start.js).
-1. https://github.com/byteball/byteballcore/wiki/Byteball-Developer-Guides
-1. Submit your new bot to the Bot Store!
 
 ## Help
 

@@ -34,7 +34,7 @@ Copy this pairing code to your Byteball wallet: Chat tab, Add a new device, Acce
 
 ## Credits / thank you
 ```
-Thanks to https://github.com/xJeneKx and the Byteball community.
+Thanks to https://github.com/xJeneKx, Rui Lun Tran and the Byteball community.
 This project is based on forks of https://github.com/xJeneKx/dicebot and https://github.com/byteball/bot-example.
 
 

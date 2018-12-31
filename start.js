@@ -36,93 +36,13 @@ eventBus.once('headless_wallet_ready', () => {
 		const device = require('byteballcore/device.js');
 		if (validationUtils.isValidAddress(ucText)) {
 			await setAddress(from_address, ucText);
-			device.sendMessageToDevice(from_address, 'text', 'Thank you! I save your address.');
+			device.sendMessageToDevice(from_address, 'text', 'Thank you! I saved your address.');
 		} else if (lcText === 'about') {
-			device.sendMessageToDevice(from_address, 'text', 'Welcome to the ErrorFareAlerts Premium Bot.\n\nHere you can get deals faster than all other subscribers. Also you will get exclusive deals, only subscribers of this bot will get.\n\n[Back](command:menu)');
-		} else if (lcText === 'change_rate_back') {
-			await setStep(from_address, '');
-			await sendNewGame(from_address);
-		} else if (userInfo && userInfo.step && userInfo.step === 'change_rate') {
-			if (matchBalance) {
-				let amount = parseInt(matchBalance[1]);
-				await setRate(from_address, amount);
-				await setStep(from_address, '');
-				device.sendMessageToDevice(from_address, 'text', 'New rate: ' + amount + 'mb\n' +
-					'Please send me your bid 10-90 \n(Example: >90)');
-			} else {
-				device.sendMessageToDevice(from_address, 'text', 'Send me new rate 1-100mb\nExample: 15mb\n\n' +
-					'[Play](command:change_rate_back)');
-			}
-		} else if (lcText === 'change_rate') {
-			await setStep(from_address, 'change_rate');
-			device.sendMessageToDevice(from_address, 'text', 'Send me new rate 1-100mb\nExample: 15mb\n\n[Play](command:change_rate_back)');
-		} else if (matchBid) {
-			let peerNumber = parseInt(matchBid[2]);
-			if (peerNumber < 10 || peerNumber > 90) {
-				return device.sendMessageToDevice(from_address, 'text', 'Please send me your bid 10-90 \n(Example: >90)');
-			}
-			await setBid(from_address, matchBid[0]);
-
-			if (userInfo.balance >= userInfo.rate) {
-				let game = await getLastGame(from_address);
-				let number = parseInt(game.val.split('/')[0]);
-				let result = '';
-
-				if ((matchBid[1] === '>' || matchBid[1] === ')') && number > peerNumber) {
-					let mult = parseFloat((100 / (100 - peerNumber)).toFixed(2));
-					let amount = parseFloat(((userInfo.rate * mult) - userInfo.rate).toFixed(2));
-					result = 'Congratulations, you won! -' + amount + '(x' + mult + ')';
-					await incBalance(amount, from_address);
-					await addMyLost(amount);
-				} else if ((matchBid[1] === '<' || matchBid[1] === ')') && number < peerNumber) {
-					let mult = parseFloat((100 / peerNumber).toFixed(2));
-					let amount = parseFloat(((userInfo.rate * mult) - userInfo.rate).toFixed(2));
-					result = 'Congratulations, you won! - ' + amount + '(x' + mult + ')';
-					await incBalance(amount, from_address);
-					await addMyLost(amount);
-				} else {
-					result = 'You lost, better luck next time!';
-					await decBalance(userInfo.rate, from_address);
-					let userRefId;
-					if (userInfo.regRefId) {
-						userRefId = await findUserByRefId(userInfo.regRefId);
-					}
-					let incJp = parseFloat((userInfo.rate * 0.5 / 100).toFixed(2));
-					await incJackpot(incJp);
-					if (userRefId) {
-						let peerSum = parseFloat((userInfo.rate / 100).toFixed(2));
-						await incBalance(peerSum, userRefId);
-						await addMyWin(userInfo.rate - peerSum - incJp, peerSum);
-					} else {
-						await addMyWin(userInfo.rate);
-					}
-				}
-
-				device.sendMessageToDevice(from_address, 'text', 'Check: ' + game.val + '\n' +
-					'My number: ' + number + '\n' +
-					'Your bid: ' + matchBid[0] + '\n' +
-					result);
-
-				await endingGame(from_address, peerNumber, game.lastGame);
-
-				if (number === 66 && userInfo.lastNumber === 66) {
-					device.sendMessageToDevice(from_address, 'text', 'Congratulations, you won the Jackpot 66/66!!! - ' + stats.jackpot + 'MB');
-					await incBalance(stats.jackpot, from_address);
-					await resetJackpot();
-					await endingJackpot(from_address, stats.jackpot);
-				}
-
-				await saveLastNumber(from_address, number);
-
-			}
-			await sendNewGame(from_address);
-		} else if (lcText === 'play') {
-			await sendNewGame(from_address);
+			device.sendMessageToDevice(from_address, 'text', 'Welcome to the ErrorFareAlerts Premium Bot.\n\nHere you can get deals faster than all other subscribers. Also you will get exclusive deals, only subscribers of this bot will get.\n\nIn order to get this premium notifications you need to deposit bytes. Every time this bot sends you a link to a deal, your byte balance will reduce by 1 MB, which is about 0,03 EUR.\n\n[Back](command:menu)');
 		} else if (matchBalance) {
 			let address = await getAssocAddress(from_address);
 			let amount = parseInt(matchBalance[1]);
 			device.sendMessageToDevice(from_address, 'text', '[balance](byteball:' + address + '?amount=' + (amount * MEGA) + ')');
-
 		} else if (text === 'deposit') {
 			device.sendMessageToDevice(from_address, 'text',
 				'[Top up on 1mb](command:1mb)\n' +
@@ -167,11 +87,11 @@ eventBus.once('headless_wallet_ready', () => {
 		} else if (lcText === 'referral') {
 			let myRefId = await getMyRefId(from_address);
 			device.sendMessageToDevice(from_address, 'text', 'Referral program\n' +
-				'You have the opportunity to make a profit by attracting new users to DICE.\n' +
+				'You have the opportunity to make a profit by attracting new users to ErrorFareAlerts.\n' +
 				'To do this, you need to follow very simple steps:\n' +
 				'1) Copy the BB link below\n' +
-				'2) Share it with your friends or on Reddit/Twitter/FB/Steemit/eth\n' +
-				'3) Get 1% of all losses of users who added the bot by your link\n' +
+				'2) Share it with your friends or on Reddit/Twitter/FB/Steemit/etc.\n' +
+				'3) Get 1% of all used deposits of users who added the bot by your link\n' +
 				'Your link:');
 			device.sendMessageToDevice(from_address, 'text', my_pairing_code + myRefId);
 		} else {
@@ -207,7 +127,7 @@ async function welcome(device_address) {
 	let stats = await getStats();
 
 	let text = '[About](command:about)\n\n' +
-		'Balance: ' + balance.toFixed(2) + 'mb\n' +
+		'Balance: ' + balance.toFixed(2) + 'mb\n\n' +
 		'[Deposit](command:deposit)\n' +
 		'[Withdraw](command:withdraw)\n' +
 		'[Referral program](command:referral)';

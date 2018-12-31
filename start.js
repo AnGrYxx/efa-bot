@@ -9,7 +9,7 @@ const headlessWallet = require('headless-byteball');
 const crypto = require('crypto');
 
 // const MEGA = 1;
-const my_pairing_code = 'AoytQbCrauzJ7q9iP9OxvgXIaEtbtlgWYSdyVy6cxHC6@byteball.org/bb#';
+const my_pairing_code = 'A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*';
 const MEGA = 1000000;
 
 eventBus.once('headless_wallet_ready', () => {

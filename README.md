@@ -31,6 +31,13 @@ Note the line that it prints on start-up:
 Copy this pairing code to your Byteball wallet: Chat tab, Add a new device, Accept invitation, paste the code, ready to chat.
 
 
+
+## Credits / thank you
+```
+Thanks to https://github.com/xJeneKx and the Byteball community.
+This project is based on forks of https://github.com/xJeneKx/dicebot and https://github.com/byteball/bot-example.
+
+
 ## Help
 
 \#tech channel on slack https://slack.byteball.org.

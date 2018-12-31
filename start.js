@@ -206,10 +206,8 @@ async function welcome(device_address) {
 	let balance = await getBalance(device_address);
 	let stats = await getStats();
 
-	let text = '[Play](command:Play)\n' +
-		'[About](command:about)\n\n' +
+	let text = '[About](command:about)\n\n' +
 		'Balance: ' + balance.toFixed(2) + 'mb\n' +
-		'Jackpot: ' + stats.jackpot.toFixed(2) + 'mb\n' +
 		'[Deposit](command:deposit)\n' +
 		'[Withdraw](command:withdraw)\n' +
 		'[Referral program](command:referral)';

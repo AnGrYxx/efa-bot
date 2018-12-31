@@ -101,25 +101,6 @@ eventBus.once('headless_wallet_ready', () => {
 
 });
 
-async function sendNewGame(from_address) {
-	const device = require('byteballcore/device.js');
-	let userInfo = await getUserInfo(from_address);
-	let stats = await getStats();
-	if (userInfo.balance < userInfo.rate) {
-		await welcome(from_address);
-		device.sendMessageToDevice(from_address, 'text', 'Please top up your balance or [change rate](command:change_rate)');
-		return;
-	}
-
-	let game = await newGame();
-	await setGameToUser(from_address, game);
-	device.sendMessageToDevice(from_address, 'text', 'Let’s roll the DICE!\nMy hash:\n' + game +
-		'\nYour rate: ' + userInfo.rate + 'mb [change](command:change_rate)\n' +
-		'Your balance: ' + userInfo.balance.toFixed(2) + 'mb\n' +
-		'Jackpot: ' + stats.jackpot.toFixed(2) + 'mb\n' +
-		'Please send me your bid 10-90 \n(Example: >90)\n\n' +
-		(userInfo.lastBid ? '[Repeat ' + userInfo.lastBid + '](command:' + userInfo.lastBid + ')' : ''));
-}
 
 async function welcome(device_address) {
 	const device = require('byteballcore/device.js');
@@ -134,24 +115,6 @@ async function welcome(device_address) {
 
 	device.sendMessageToDevice(device_address, 'text', text);
 }
-
-function newGame() {
-	return new Promise(resolve => {
-		let text = random() + '/' + Date.now() + '/' + Math.random();
-		let hash = crypto.createHash('sha1').update(text).digest('hex');
-		db.query(
-			'INSERT OR REPLACE INTO games (id, val) VALUES(?,?)',
-			[hash, text], () => {
-				return resolve(hash);
-			}
-		);
-	});
-}
-
-function random() {
-	return Math.floor(Math.random() * (101 - 1)) + 1;
-}
-
 
 eventBus.on('new_my_transactions', (arrUnits) => {
 	let device = require('byteballcore/device.js');
@@ -210,30 +173,6 @@ function getAssocAddress(device_address) {
 	});
 }
 
-function setGameToUser(device_address, game) {
-	return new Promise(resolve => {
-		db.query("UPDATE users SET lastGame = ? WHERE device_address = ?", [game, device_address], () => {
-			return resolve();
-		});
-	});
-}
-
-function getLastGame(device_address) {
-	return new Promise(resolve => {
-		db.query("SELECT lastGame FROM users WHERE device_address = ?", [device_address], rows => {
-			if (!rows.length || !rows[0].lastGame) {
-				return resolve({val: 0, lastGame: 0});
-			} else {
-				db.query("SELECT val FROM games WHERE id = ?", [rows[0].lastGame], rows2 => {
-					if (!rows2) return resolve(-1);
-					return resolve({val: rows2[0].val, lastGame: rows[0].lastGame});
-				});
-			}
-		});
-	})
-}
-
-
 function getBalance(device_address) {
 	return new Promise(resolve => {
 		db.query("SELECT balance FROM users WHERE device_address = ?", [device_address], rows => {
@@ -268,22 +207,6 @@ function decBalance(amount, device_address) {
 	});
 }
 
-function setStep(device_address, step) {
-	return new Promise(resolve => {
-		db.query("UPDATE users SET step = ? WHERE device_address = ?", [step, device_address], () => {
-			return resolve();
-		});
-	})
-}
-
-function setRate(device_address, rate) {
-	return new Promise(resolve => {
-		db.query("UPDATE users SET rate = ? WHERE device_address = ?", [rate, device_address], () => {
-			return resolve();
-		});
-	})
-}
-
 function setAddress(device_address, user_address) {
 	return new Promise(resolve => {
 		db.query("UPDATE users SET user_address = ? WHERE device_address = ?", [user_address, device_address], () => {
@@ -297,32 +220,6 @@ function getUserInfo(device_address) {
 		db.query("SELECT * FROM users WHERE device_address = ?", [device_address], rows => {
 			if (!rows.length) return resolve(false);
 			return resolve(rows[0]);
-		});
-	});
-}
-
-function addMyWin(amount, ref) {
-	return new Promise(resolve => {
-		if (!ref) ref = 0;
-		db.query("UPDATE stats SET balance = balance + ?, plus = plus + 1, totalPlus = totalPlus + ?,  totalRef = totalRef + ?",
-			[amount, amount, ref], () => {
-				return resolve();
-			});
-	});
-}
-
-function addMyLost(amount) {
-	return new Promise(resolve => {
-		db.query("UPDATE stats SET balance = balance - ?, minus = minus + 1, totalMinus = totalMinus + ?", [amount, amount], () => {
-			return resolve();
-		});
-	});
-}
-
-function setBid(device_address, bid) {
-	return new Promise(resolve => {
-		db.query("UPDATE users SET lastBid = ? WHERE device_address = ?", [bid, device_address], () => {
-			return resolve();
 		});
 	});
 }
@@ -342,15 +239,6 @@ function getMyRefId(device_address) {
 	});
 }
 
-function findUserByRefId(refId) {
-	return new Promise(resolve => {
-		db.query("SELECT device_address FROM users WHERE myRefId = ?", [refId], rows => {
-			if (!rows.length) return resolve(null);
-			return resolve(rows[0].device_address);
-		});
-	});
-}
-
 function setRegRefId(device_address, refId) {
 	return new Promise(resolve => {
 		db.query("UPDATE users SET regRefId = ? WHERE device_address = ?", [refId, device_address], () => {
@@ -363,49 +251,6 @@ function getStats() {
 	return new Promise(resolve => {
 		db.query("SELECT * FROM stats", [], rows => {
 			return resolve(rows[0]);
-		});
-	});
-}
-
-function saveLastNumber(device_address, number) {
-	return new Promise(resolve => {
-		db.query("UPDATE users SET lastNumber = ? WHERE device_address = ?", [number, device_address], () => {
-			return resolve();
-		});
-	});
-}
-
-function incJackpot(amount) {
-	return new Promise(resolve => {
-		db.query("UPDATE stats SET jackpot = jackpot + ?", [amount], () => {
-			return resolve();
-		});
-	});
-}
-
-function resetJackpot() {
-	return new Promise(resolve => {
-		db.query("UPDATE stats SET jackpot = 0", [], () => {
-			return resolve();
-		});
-	});
-}
-
-function endingJackpot(device_address, jackpot) {
-	return new Promise(resolve => {
-		db.query(
-			'INSERT INTO jackpots (device_address, jackpot) VALUES(?,?)',
-			[device_address, jackpot], () => {
-				return resolve(0);
-			}
-		);
-	});
-}
-
-function endingGame(device_address, userNumber, id) {
-	return new Promise(resolve => {
-		db.query("UPDATE games SET ended = 1, device_address = ?, userNumber = ? WHERE id = ?", [device_address, userNumber, id], () => {
-			return resolve();
 		});
 	});
 }

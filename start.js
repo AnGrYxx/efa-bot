@@ -84,14 +84,19 @@ eventBus.once('headless_wallet_ready', () => {
 		} else if (lcText === 'withdraw_no') {
 			device.sendMessageToDevice(from_address, 'text', 'ok');
 			await welcome(from_address);
-		} else if (lcText === 'referral') {
+		} else if (lcText === 'terms') {
+			device.sendMessageToDevice(from_address, 'text', 'Coming soon\n\n[Back](command:menu)');
+		} else if (lcText === 'howtobuy') {
+			device.sendMessageToDevice(from_address, 'text', 'There are 3 ways to buy or earn some Bytes, the currency you need for this premium service:\n\n1)  Buying Bytes via a credit card: https://medium.com/byteball/buying-bytes-with-visa-or-mastercard-d8ee2d1a2b07</a>\n2) Buying Bytes from a Cryptocurrency Exchange: https://wiki.byteball.org/Trading#Buying_GB_on_exchanges\n3) Earning Bytes e.g. from Byteball Cashback merchants: https://wiki.byteball.org/Cashback#Merchants\n\n[Back](command:menu)');
+		} 
+		else if (lcText === 'referral') {
 			let myRefId = await getMyRefId(from_address);
 			device.sendMessageToDevice(from_address, 'text', 'Referral program\n' +
 				'You have the opportunity to make a profit by attracting new users to ErrorFareAlerts.\n' +
 				'To do this, you need to follow very simple steps:\n' +
-				'1) Copy the BB link below\n' +
-				'2) Share it with your friends or on Reddit/Twitter/FB/Steemit/etc.\n' +
-				'3) Get 1% of all used deposits of users who added the bot by your link\n' +
+				'1) Copy the Byteball link below\n' +
+				'2) Share it with your friends or on Reddit/Twitter/Facebook/Steemit/etc.\n' +
+				'3) Get 20% of all used deposits of users who added the bot by your link\n' +
 				'Your link:');
 			device.sendMessageToDevice(from_address, 'text', my_pairing_code + myRefId);
 		} else {
@@ -108,10 +113,12 @@ async function welcome(device_address) {
 	let stats = await getStats();
 
 	let text = '[About](command:about)\n\n' +
-		'Balance: ' + balance.toFixed(2) + 'mb\n\n' +
+		'Balance: ' + balance.toFixed(2) + 'mb\n' +
+		'[How to buy Bytes](command:howtobuy)\n' +
 		'[Deposit](command:deposit)\n' +
-		'[Withdraw](command:withdraw)\n' +
-		'[Referral program](command:referral)';
+		'[Withdraw](command:withdraw)\n\n' +
+		'[Referral program](command:referral)\n' +
+		'[Terms of Use](command:terms)\n' ;
 
 	device.sendMessageToDevice(device_address, 'text', text);
 }

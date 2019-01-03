@@ -47,12 +47,11 @@ eventBus.once('headless_wallet_ready', () => {
 			device.sendMessageToDevice(from_address, 'text',
 				'[Top up on 1mb](command:1mb)\n' +
 				'[Top up on 15mb](command:15mb)\n' +
-				'[Top up on 30mb](command:30mb)\n' +
 				'[Top up on 75mb](command:75mb)\n' +
 				'[Top up on 100mb](command:100mb)\n' +
 				'[Top up on 500mb](command:500mb)\n' +
-				'[Top up on 1000mb](command:1000mb)\n' +
-				'or send amount, for example "66mb"')
+				'or send amount, for example "66mb"\n\n' +
+				'You can always withdraw your balance, if you don´t want to use this bot anymore!')
 		} else if (lcText === 'withdraw') {
 			let text = 'Your balance: ' + userInfo.balance + 'mb\n';
 			if (!userInfo.user_address) {
@@ -85,9 +84,9 @@ eventBus.once('headless_wallet_ready', () => {
 			device.sendMessageToDevice(from_address, 'text', 'ok');
 			await welcome(from_address);
 		} else if (lcText === 'terms') {
-			device.sendMessageToDevice(from_address, 'text', 'Coming soon\n\n[Back](command:menu)');
+			device.sendMessageToDevice(from_address, 'text', 'This chat bot is provided “as is,” with all faults, and MyActivities GmbH expresses no representations or warranties, of any kind related to this chat bot or the materials and services provided with this chat bot. In no event shall MyActivities GmbH, nor any of its authors, developers and employees, shall be held liable for anything arising out of or in any way connected with your use of this chat bot whether such liability is under contract. MyActivities GmbH, including its authors, developers and employees shall not be held liable for any direct, indirect, consequential or special liability arising out of or in any way related to your use of this chat bot. This also includes loss of funds of any kind, including software or hardware failures, malicious attacks, connection, protocol or wallet failures. Minors or people below 18 years old are not allowed to use this chat bot. If any provision of these Terms is found to be invalid under any applicable law, such provisions shall be deleted without affecting the remaining provisions herein. If you disagree with these terms you must not use this chat bot. This Bot is experimental and an early Alpha version.\n\n[Back](command:menu)');
 		} else if (lcText === 'howtobuy') {
-			device.sendMessageToDevice(from_address, 'text', 'There are 3 ways to buy or earn some Bytes, the currency you need for this premium service:\n\n1)  Buying Bytes via a credit card: https://medium.com/byteball/buying-bytes-with-visa-or-mastercard-d8ee2d1a2b07</a>\n2) Buying Bytes from a Cryptocurrency Exchange: https://wiki.byteball.org/Trading#Buying_GB_on_exchanges\n3) Earning Bytes e.g. from Byteball Cashback merchants: https://wiki.byteball.org/Cashback#Merchants\n\n[Back](command:menu)');
+			device.sendMessageToDevice(from_address, 'text', 'There are 3 ways to buy or earn some Bytes, the currency you need for this premium service:\n\n1)  Buying Bytes via a credit card: https://medium.com/byteball/buying-bytes-with-visa-or-mastercard-d8ee2d1a2b07\n2) Buying Bytes from a Cryptocurrency Exchange: https://wiki.byteball.org/Trading#Buying_GB_on_exchanges\n3) Earning Bytes e.g. from Byteball Cashback merchants: https://wiki.byteball.org/Cashback#Merchants\n\n[Back](command:menu)');
 		} 
 		else if (lcText === 'referral') {
 			let myRefId = await getMyRefId(from_address);
@@ -135,7 +134,7 @@ eventBus.on('new_my_transactions', (arrUnits) => {
 				if (row.received_asset !== null)
 					return device.sendMessageToDevice(row.device_address, 'text', "Received payment in wrong asset");
 
-				return device.sendMessageToDevice(row.device_address, 'text', "I have received payment. Now let's wait until he's stable, i will write you.\n" +
+				return device.sendMessageToDevice(row.device_address, 'text', "I have received payment. Now let's wait until the payment is stable (usually it needs about 10 minutes), i will write you.\n" +
 					"You sent " + (row.amount/MEGA).toFixed(2) + " mb");
 			});
 		}
@@ -153,8 +152,8 @@ eventBus.on('my_transactions_became_stable', (arrUnits) => {
 		rows => {
 			rows.forEach(async (row) => {
 				await incBalance(parseFloat((row.amount/MEGA).toFixed(2)), row.device_address);
-				return device.sendMessageToDevice(row.device_address, 'text', 'Payment stabled, you have received ' + (row.amount / MEGA) + ' MB' +
-					'\n\n[Play](command:play)');
+				return device.sendMessageToDevice(row.device_address, 'text', 'Payment stabled, ' + (row.amount / MEGA) + ' MB was added to your balance.' +
+					'\n\n[Back](command:menu)');
 			});
 		}
 	);

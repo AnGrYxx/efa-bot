@@ -1,3 +1,19 @@
+
+CREATE TABLE users (
+	device_address CHAR(33) NOT NULL PRIMARY KEY,
+	user_address CHAR(32) NULL,
+	creation_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	balance INT NOT NULL DEFAULT 0,
+	lastGame CHAR(40) NULL,
+	rate INT NOT NULL DEFAULT 1,
+	lastBid CHAR(30) NULL,
+	myRefId CHAR(40) NULL,
+	regRefId CHAR(40) NULL,
+	step CHAR(40) NULL,
+	lastNumber INT NULL,
+	FOREIGN KEY (device_address) REFERENCES correspondent_devices(device_address)
+);
+
 CREATE TABLE assoc_address (
 	device_address CHAR(33) NOT NULL PRIMARY KEY,
 	address CHAR(32) NULL,

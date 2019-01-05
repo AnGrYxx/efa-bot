@@ -8,6 +8,8 @@ const validationUtils = require('byteballcore/validation_utils');
 const headlessWallet = require('headless-byteball');
 const crypto = require('crypto');
 const request = require('request-promise-native');
+const env = require('./config/env');
+const AWS = require('aws-sdk');
 
 // const MEGA = 1;
 const my_pairing_code = 'A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*';

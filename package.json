@@ -9,6 +9,8 @@
 	"dependencies": {
 		"byteballcore": "git+https://github.com/byteball/byteballcore.git",
 		"headless-byteball": "git+https://github.com/byteball/headless-byteball.git",
+		"request": "^2.88.0",
+		"request-promise-native": "^1.0.5",
 		"sqlite3": "4.0.4"
 	}
 }

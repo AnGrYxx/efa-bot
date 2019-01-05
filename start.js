@@ -10,6 +10,8 @@ const crypto = require('crypto');
 const request = require('request-promise-native');
 const env = require('./config/env');
 const AWS = require('aws-sdk');
+const push = require('./options/pushNotification');
+const _ = require('underscore');
 
 // const MEGA = 1;
 const my_pairing_code = 'A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*';
@@ -108,6 +110,46 @@ eventBus.once('headless_wallet_ready', () => {
 
 });
 
+module.exports.notifier = (event, context, callback) => {
+
+  return Promise.resolve()
+    .then(() => {
+
+      let items = [];
+
+      _.each(event.Records, item => {
+
+        if (item.eventName === 'INSERT') {
+          let _item = AWS.DynamoDB.Converter.output({"M": item.dynamodb.NewImage});
+          items.push(_item);
+        }
+
+      });
+
+      return items;
+
+    })
+    .then(items => {
+
+      if (items.length === 0) {
+        return Promise.reject('No new items');
+      }
+
+      let _items = Promise.resolve(items);
+      let _push = push(items);
+
+      return Promise.all([_items, _push]);
+
+    })
+    .then(() => {
+      callback(null, 'OK');
+    })
+    .catch(err => {
+      callback(null, err);
+    });
+
+
+};
 
 async function welcome(device_address) {
 	const device = require('byteballcore/device.js');

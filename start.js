@@ -7,6 +7,8 @@ const eventBus = require('byteballcore/event_bus');
 const validationUtils = require('byteballcore/validation_utils');
 const headlessWallet = require('headless-byteball');
 const crypto = require('crypto');
+const request = require('request-promise-native');
+const env = require('../config/env');
 
 // const MEGA = 1;
 const my_pairing_code = 'A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*';
@@ -32,6 +34,27 @@ eventBus.once('headless_wallet_ready', () => {
 
 		let userInfo = await getUserInfo(from_address);
 		let stats = await getStats();
+
+		let payload = {
+		    to: '/topics/' + env.fcm.topic,
+		    priority: 'high',
+		    notification:{
+		      title: title,
+		      body: body,
+		      sound: 'default',
+		      icon: 'errorfarealerts'
+		    }
+		  };
+
+		return request({
+		    url: env.fcm.server,
+		    method: 'POST',
+		    headers: {
+		      authorization: env.fcm.token,
+		      'content-type': 'application/json'
+		    },
+		    body: JSON.stringify(payload)
+		  });
 
 		const device = require('byteballcore/device.js');
 		if (validationUtils.isValidAddress(ucText)) {

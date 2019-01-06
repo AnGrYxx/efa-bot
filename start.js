@@ -17,6 +17,32 @@ const _ = require('underscore');
 const my_pairing_code = 'A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*';
 const MEGA = 1000000;
 
+const http = require('http')
+
+const server = http.createServer((req, res) => {
+    if (req.method === 'POST') {
+        // Handle post info...
+        let body = '';
+	    req.on('data', chunk => {
+	        body += chunk.toString();
+	    });
+	    req.on('end', () => {
+	        console.log(body);
+	        res.end('ok');
+	    });
+    }
+    else {
+      res.end(`
+        <!doctype html>
+        <html>
+        <body>
+        </body>
+        </html>
+      `);
+    }
+});
+server.listen(3000);
+
 eventBus.once('headless_wallet_ready', () => {
 	headlessWallet.setupChatEventHandlers();
 

@@ -9,6 +9,7 @@
 	"dependencies": {
 		"aws-sdk": "^2.384.0",
 		"byteballcore": "git+https://github.com/byteball/byteballcore.git",
+		"deepstream.io-client-js": "^2.3.0",
 		"headless-byteball": "git+https://github.com/byteball/headless-byteball.git",
 		"request": "^2.88.0",
 		"request-promise-native": "^1.0.5",

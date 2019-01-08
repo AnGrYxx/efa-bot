@@ -32,16 +32,7 @@ const server = http.createServer((req, res) => {
 	    req.on('end', () => {
 	        let post = JSON.parse(body);
 	        message = post;
-	        console.log(body);
-	        console.log("body");
-	        console.log(post);
-	        console.log("post");
 	        console.log(message);
-	        console.log("message");
-	        console.log(post.Subject);
-	        console.log("post.Subject");
-	        console.log(post.Message);
-	        console.log("post.Message");
 	        res.end('ok');
 	        if (post.Type = "Notification") {
 	        	headlessWallet.setupChatEventHandlers();

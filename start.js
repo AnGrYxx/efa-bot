@@ -13,6 +13,8 @@ const AWS = require('aws-sdk');
 const push = require('./options/pushNotification');
 const _ = require('underscore');
 const qs = require('querystring');
+var message = "TestPush";
+const async = require('async');
 
 // const MEGA = 1;
 const my_pairing_code = 'A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*';
@@ -29,15 +31,44 @@ const server = http.createServer((req, res) => {
 	    });
 	    req.on('end', () => {
 	        let post = JSON.parse(body);
+	        message = post;
 	        console.log(body);
 	        console.log("body");
 	        console.log(post);
 	        console.log("post");
+	        console.log(message);
+	        console.log("message");
 	        console.log(post.Subject);
 	        console.log("post.Subject");
 	        console.log(post.Message);
 	        console.log("post.Message");
 	        res.end('ok');
+	        if (post.Type = "Notification") {
+	        	headlessWallet.setupChatEventHandlers();
+	        	var device = require('byteballcore/device.js');
+				db.query(
+					"SELECT device_address FROM users",
+					rows => {
+						console.error(rows.length+" messages will be sent");
+						async.eachSeries(
+							rows,
+							(row, cb) => {
+								device.sendMessageToDevice(row.device_address, 'text', post.Subject + ':\n' + post.Message, {
+									ifOk: function(){}, 
+									ifError: function(){}, 
+									onSaved: function(){
+										console.log("sent to "+row.device_address);
+										cb();
+									}
+								});
+							},
+							() => {
+								console.error("=== done");
+							}
+						);
+					}
+				);
+	        };
 	    });
     }
     else {

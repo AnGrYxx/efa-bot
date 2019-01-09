@@ -1,10 +1,10 @@
 {
-	"name": "dice_bot",
+	"name": "efa-bot",
 	"version": "1.0.0",
-	"description": "Example source code for Byteball chatbot",
+	"description": "Error Fare Alerts Bot",
 	"main": "start.js",
-	"repository": "https://github.com/byteball/bot-example.git",
-	"author": "tony",
+	"repository": "https://github.com/AnGrYxx/efa-bot",
+	"author": "AnGr",
 	"license": "MIT",
 	"dependencies": {
 		"aws-sdk": "^2.384.0",

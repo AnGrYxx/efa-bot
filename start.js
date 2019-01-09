@@ -19,17 +19,18 @@ const async = require('async');
 // const MEGA = 1;
 const my_pairing_code = 'A0BAwtrdy0EmpliXdoUTO4awF51F+yCZjdK7zbX4CNMi@byteball.org/bb#*';
 const MEGA = 1000000;
+const efRate = 1;
 
 const http = require('http')
 
-const server = http.createServer((req, res) => {
+const server = http.createServer((req, res, from_address) => {
     if (req.method === 'POST') {
         // Handle post info...
         let body = '';
 	    req.on('data', chunk => {
 	        body += chunk.toString();
 	    });
-	    req.on('end', () => {
+	    req.on('end', async() => {
 	        let post = JSON.parse(body);
 	        message = post;
 	        console.log(message);
@@ -47,8 +48,9 @@ const server = http.createServer((req, res) => {
 								device.sendMessageToDevice(row.device_address, 'text', post.Subject + ':\n' + post.Message, {
 									ifOk: function(){}, 
 									ifError: function(){}, 
-									onSaved: function(){
+									onSaved: async function(){
 										console.log("sent to "+row.device_address);
+										await decBalance(efRate, row.device_address);
 										cb();
 									}
 								});
@@ -74,6 +76,14 @@ const server = http.createServer((req, res) => {
     }
 });
 server.listen(3000);
+
+function decBalance(amount, device_address) {
+	return new Promise(resolve => {
+		db.query("UPDATE users SET balance = balance - ? WHERE device_address = ?", [amount, device_address], () => {
+			return resolve();
+		});
+	});
+}
 
 eventBus.once('headless_wallet_ready', () => {
 	headlessWallet.setupChatEventHandlers();

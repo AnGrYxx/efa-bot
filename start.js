@@ -61,7 +61,7 @@ const server = http.createServer((req, res, from_address) => {
 								}
 								else if (userInfo.balance < efRate){
 									console.log("<1")
-									device.sendMessageToDevice(row.device_address, 'text', 'You have not enough funds deposited.\n' +
+									device.sendMessageToDevice(row.device_address, 'text', 'You have missed a deal, as you have not enough funds deposited.\n' +
 										'[Top up on 1mb](command:1mb)\n' +
 										'[Top up on 15mb](command:15mb)\n' +
 										'[Top up on 75mb](command:75mb)\n' +

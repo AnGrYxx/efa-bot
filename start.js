@@ -53,7 +53,7 @@ const server = http.createServer((req, res, from_address) => {
 										onSaved: async function(){
 											console.log("sent to "+row.device_address);
 											await decBalance(efRate, row.device_address);
-											cb();
+											//cb();
 										}
 									});
 								}
@@ -71,7 +71,7 @@ const server = http.createServer((req, res, from_address) => {
 										ifError: function(){}, 
 										onSaved: async function(){
 											console.log("sent to "+row.device_address);
-											cb();
+											//cb();
 										}
 									});
 								}

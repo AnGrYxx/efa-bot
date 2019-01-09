@@ -44,16 +44,39 @@ const server = http.createServer((req, res, from_address) => {
 						console.error(rows.length+" messages will be sent");
 						async.eachSeries(
 							rows,
-							(row, cb) => {
-								device.sendMessageToDevice(row.device_address, 'text', post.Subject + ':\n' + post.Message, {
-									ifOk: function(){}, 
-									ifError: function(){}, 
-									onSaved: async function(){
-										console.log("sent to "+row.device_address);
-										await decBalance(efRate, row.device_address);
-										cb();
-									}
-								});
+							async(row, cb) => {
+								let userInfo = await getUserInfo(row.device_address);
+								console.log(userInfo.balance);
+								if (userInfo.balance >= efRate){
+									console.log(">1")
+									device.sendMessageToDevice(row.device_address, 'text', post.Subject + ':\n' + post.Message, {
+										ifOk: function(){}, 
+										ifError: function(){}, 
+										onSaved: async function(){
+											console.log("sent to "+row.device_address);
+											await decBalance(efRate, row.device_address);
+											cb();
+										}
+									});
+								}
+								else if (userInfo.balance < efRate){
+									console.log("<1")
+									device.sendMessageToDevice(row.device_address, 'text', 'You have not enough funds deposited.\n' +
+										'[Top up on 1mb](command:1mb)\n' +
+										'[Top up on 15mb](command:15mb)\n' +
+										'[Top up on 75mb](command:75mb)\n' +
+										'[Top up on 100mb](command:100mb)\n' +
+										'[Top up on 500mb](command:500mb)\n' +
+										'or send amount, for example "66mb"\n\n' +
+										'You can always withdraw your balance, if you don´t want to use this bot anymore!', {
+										ifOk: function(){}, 
+										ifError: function(){}, 
+										onSaved: async function(){
+											console.log("sent to "+row.device_address);
+											cb();
+										}
+									});
+								}
 							},
 							() => {
 								console.error("=== done");

@@ -36,9 +36,7 @@ const server = http.createServer((req, res, from_address) => {
 	        if (post.Type = "Notification") {
 	        	headlessWallet.setupChatEventHandlers();
 	        	var device = require('byteballcore/device.js');
-				db.query(
-					"SELECT device_address FROM users",
-					rows => {
+						db.query("SELECT device_address FROM users", rows => {
 						console.error(rows.length+" messages will be sent");
 						async.eachSeries(
 							rows,
@@ -80,20 +78,9 @@ const server = http.createServer((req, res, from_address) => {
 								console.error("=== done");
 							}
 						);
-					}
-				);
-	        };
+					});
+	        }
 	    });
-    }
-    else {
-      res.end(`
-        <!doctype html>
-        <html>
-        <body>
-        	Hiho
-        </body>
-        </html>
-      `);
     }
 });
 server.listen(3000);
@@ -268,40 +255,6 @@ function getAssocAddress(device_address) {
 					);
 				});
 			}
-		});
-	});
-}
-
-function getBalance(device_address) {
-	return new Promise(resolve => {
-		db.query("SELECT balance FROM users WHERE device_address = ?", [device_address], rows => {
-			if (rows.length) {
-				return resolve(rows[0].balance);
-			} else {
-				db.query(
-					'INSERT OR REPLACE INTO users (device_address, balance) VALUES(?,0)',
-					[device_address], () => {
-						return resolve(0);
-					}
-				);
-			}
-		});
-	});
-}
-
-function incBalance(amount, device_address) {
-	return new Promise(resolve => {
-		db.query("UPDATE users SET balance = balance + ? WHERE device_address = ?",
-			[amount, device_address], () => {
-				return resolve();
-			});
-	});
-}
-
-function decBalance(amount, device_address) {
-	return new Promise(resolve => {
-		db.query("UPDATE users SET balance = balance - ? WHERE device_address = ?", [amount, device_address], () => {
-			return resolve();
 		});
 	});
 }
